@@ -1,0 +1,3 @@
+name = "demo-with-custom-backend"
+main = "src/index.js"
+compatibility_date = "2023-03-18"
