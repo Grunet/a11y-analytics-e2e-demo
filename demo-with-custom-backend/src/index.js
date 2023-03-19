@@ -35,8 +35,8 @@ export default {
 					</head>
 					<body>
 						<main>
-							<h1>This needs better text</h1>
-							<button id="conversion-button">Click to simulate a conversion</button>
+							<h1>To convert or not to convert, that is the question</h1>
+							<button id="conversion-button">Hit me to simulate a conversion</button>
 						</main>
 						<script>
 							let usesKeyboard = false;
