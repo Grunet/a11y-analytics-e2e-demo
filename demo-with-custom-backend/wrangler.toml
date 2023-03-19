@@ -1,3 +1,8 @@
 name = "demo-with-custom-backend"
 main = "src/index.js"
 compatibility_date = "2023-03-18"
+
+[[r2_buckets]]
+binding = 'BLOB_STORAGE' # <~ valid JavaScript variable name
+bucket_name = 'a11y-analytics-e2e-demo-storage'
+
