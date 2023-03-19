@@ -79,6 +79,15 @@ export default {
 			return new Response();
 		}
 
+		if (url.pathname === "/admin/analytics") {
+			const durableObjectId = env.R2Cache.idFromName("r2cacheinstance");
+			const stub = env.DURABLE_OBJECT_NAME.get(durableObjectId);
+			const res = await stub.fetch("/rawAnalyticsData");
+			const rawAnalyticsData = await res.json();
+			
+			console.log(`Raw analytics data: ${rawAnalyticsData}`);
+		}
+
 		throw new Error(`Unspecified route hit: ${request.url}`);
 	}
 };
@@ -102,3 +111,22 @@ async function saveEventDataToR2(env, eventData) {
 		await env.BLOB_STORAGE.put(key, JSON.stringify(eventData));
 	}
 }
+
+export class R2Cache {
+	constructor(state, env) {}
+
+	async fetch(request) {
+		const url = new URL(request.url);
+
+		if (url.pathname === "/rawAnalyticsData") {
+			return new Response(JSON.stringify("Hello World"), {
+				headers: {
+					'Content-Type': "application/json"
+				}
+			});
+		}
+
+		throw new Error(`Unspecified route hit: ${request.url}`);
+	}
+}
+  

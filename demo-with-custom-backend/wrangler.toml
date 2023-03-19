@@ -6,3 +6,8 @@ compatibility_date = "2023-03-18"
 binding = 'BLOB_STORAGE' # <~ valid JavaScript variable name
 bucket_name = 'a11y-analytics-e2e-demo-storage'
 
+[durable_objects]
+bindings = [
+  { name = "R2Cache", class_name = "R2Cache" }
+]
+
