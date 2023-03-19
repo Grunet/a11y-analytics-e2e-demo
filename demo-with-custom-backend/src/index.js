@@ -20,6 +20,11 @@ export default {
 					<head>
 						<script>
 							console.log("Page loaded");
+
+							navigator.sendBeacon("/analytics", {
+								clientKeyForBasicAbuseProtection: "clientKeyForBasicAbuseProtectionValue",
+								pageLoad: true
+							});
 						</script>
 						<title>E2E Analytics for Accessibility Demo</title>
 						<meta name="description" content="An end-to-end demo of analytics for accessibility using a custom backend">
@@ -34,6 +39,11 @@ export default {
 						<script>
 							document.getElementById("conversion-button").addEventListener("click", () => {
 								console.log("Button clicked");
+
+								navigator.sendBeacon("/analytics", {
+									clientKeyForBasicAbuseProtection: "clientKeyForBasicAbuseProtectionValue",
+									conversion: true
+								});
 							})
 						</script>
 					</body>
@@ -61,6 +71,8 @@ export default {
 			}
 
 			console.log(JSON.stringify(body));
+
+			return new Response();
 		}
 
 		throw new Error(`Unspecified route hit: ${request.url}`);
