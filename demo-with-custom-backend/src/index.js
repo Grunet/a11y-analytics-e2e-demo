@@ -70,7 +70,7 @@ export default {
 				);
 			}
 
-			console.log(JSON.stringify(body));
+			console.log(`request to /analytics with body: ${JSON.stringify(body)}`);
 
 			return new Response();
 		}
