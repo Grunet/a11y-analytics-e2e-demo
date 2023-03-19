@@ -8,6 +8,8 @@
  * Learn more at https://developers.cloudflare.com/workers/
  */
 
+import { createId } from '@paralleldrive/cuid2';
+
 export default {
 	async fetch(request, env, ctx) {
 
@@ -71,6 +73,9 @@ export default {
 			}
 
 			console.log(`request to /analytics with body: ${JSON.stringify(body)}`);
+
+			const objectName = createId();
+			console.log(objectName)
 
 			return new Response();
 		}
