@@ -29,7 +29,11 @@ export default {
 						</main>
 					</body>
 				</html>
-			`);
+			`, {
+				headers: {
+					'Content-Type': 'text\\html'
+				}
+			});
 		}
 
 		throw new Error(`Unspecified route hit: ${request.url}`);
