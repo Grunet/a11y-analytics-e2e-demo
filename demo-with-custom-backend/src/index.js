@@ -121,7 +121,28 @@ export class R2Cache {
 		const url = new URL(request.url);
 
 		if (url.pathname === "/admin/analytics") {
-			return new Response(JSON.stringify("Hello World"), {
+
+			const list = await this.env.BLOB_STORAGE.list({
+				prefix: "allEvents"
+			});
+
+			console.log(list);
+
+			const allSettledRes = await Promise.allSettled(list.objects.map(async ({key}) => {
+				const object = await this.env.BLOB_STORAGE.get(key);
+
+				const json = await new Response(object.body).text();
+
+				return json;
+			}));
+ 
+			const allDataAsArrayOfJsObjects = allSettledRes.filter(({value}) => !!value).map(({value}) => JSON.parse(value));
+
+			const returnObj = {
+				eventsData: allDataAsArrayOfJsObjects,
+			};
+
+			return new Response(JSON.stringify(returnObj), {
 				headers: {
 					'Content-Type': "application/json"
 				}
