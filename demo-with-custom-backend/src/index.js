@@ -86,8 +86,10 @@ export default {
 			const rawAnalyticsData = await res.json();
 			
 			console.log(`Raw analytics data: ${JSON.stringify(rawAnalyticsData)}`);
+
+			const { conversionRate } = computeConversionRates(rawAnalyticsData);
 			
-			return new Response(JSON.stringify(rawAnalyticsData));
+			return new Response(`Conversion rate is ${conversionRate}`);
 		}
 
 		throw new Error(`Unspecified route hit: ${request.url}`);
@@ -111,6 +113,34 @@ async function saveEventDataToR2(env, eventData) {
 		const key = `${folder}/${objectName}.json`;
 
 		await env.BLOB_STORAGE.put(key, JSON.stringify(eventData));
+	}
+}
+
+function computeConversionRates(rawAnalyticsData) {
+	const { eventsData } = rawAnalyticsData;
+
+	let numPageLoads = 0;
+	let numConversions = 0;
+
+	for (const event of eventsData) {
+		if (event.pageLoad === true) {
+			numPageLoads++;
+		}
+
+		if (event.conversion === true) {
+			numConversions++;
+		}
+	}
+
+	let conversionRate;
+	if (numPageLoads === 0) {
+		conversionRate = "Undefined";
+	} else {
+		conversionRate = numConversions/numPageLoads;
+	}
+
+	return {
+		conversionRate,
 	}
 }
 
