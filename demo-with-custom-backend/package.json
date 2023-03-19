@@ -10,5 +10,8 @@
     "start": "wrangler dev",
     "deploy": "wrangler publish",
     "test": "vitest"
+  },
+  "dependencies": {
+    "@paralleldrive/cuid2": "^2.2.0"
   }
 }
