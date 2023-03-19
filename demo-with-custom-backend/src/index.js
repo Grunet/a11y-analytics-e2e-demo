@@ -85,7 +85,9 @@ export default {
 			const res = await stub.fetch(request); // Forwarding this as-is seems required. I tried doing other things but nothing worked.
 			const rawAnalyticsData = await res.json();
 			
-			console.log(`Raw analytics data: ${rawAnalyticsData}`);
+			console.log(`Raw analytics data: ${JSON.stringify(rawAnalyticsData)}`);
+			
+			return new Response(JSON.stringify(rawAnalyticsData));
 		}
 
 		throw new Error(`Unspecified route hit: ${request.url}`);
