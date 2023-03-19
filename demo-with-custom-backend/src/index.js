@@ -45,6 +45,24 @@ export default {
 			});
 		}
 
+		if (url.pathname === '/analytics') {
+			const body = await request.json();
+
+			if (body.clientKeyForBasicAbuseProtection !== "clientKeyForBasicAbuseProtectionValue") {
+				console.log(`Something other than the web client hit the /analytics endpoint. Request body: ${JSON.stringify(body)}`);
+
+				return new Response('Forbidden', {
+						status: 403,
+						headers: {
+							'Content-Type': 'text/plain'
+						}
+					}
+				);
+			}
+
+			console.log(JSON.stringify(body));
+		}
+
 		throw new Error(`Unspecified route hit: ${request.url}`);
 	}
 };
