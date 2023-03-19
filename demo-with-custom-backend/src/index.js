@@ -124,7 +124,27 @@ export default {
 
 			const { conversionRate, keyboardConversionRate } = computeConversionRates(rawAnalyticsData);
 			
-			return new Response(`Conversion rate is ${conversionRate}. Keyboard conversion rate is ${keyboardConversionRate}`);
+			return new Response(`
+				<!DOCTYPE html>
+				<html lang="en">
+					<head>
+						<title>E2E Analytics for Accessibility Demo - Results</title>
+						<meta name="description" content="The results of an end-to-end demo of analytics for accessibility using a custom backend">
+						<meta charset="UTF-8">
+						<meta name="viewport" content="width=device-width, initial-scale=1.0">
+					</head>
+					<body>
+						<main>
+							<p>Conversion rate is ${conversionRate}</p>
+							<p>Keyboard conversion rate is ${keyboardConversionRate}</p>
+						</main>
+					</body>
+				</html>
+			`, {
+				headers: {
+					'Content-Type': 'text\\html'
+				}
+			});
 		}
 
 		throw new Error(`Unspecified route hit: ${request.url}`);
