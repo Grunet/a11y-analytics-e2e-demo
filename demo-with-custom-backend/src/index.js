@@ -82,7 +82,7 @@ export default {
 		if (url.pathname === "/admin/analytics") {
 			const durableObjectId = env.R2Cache.idFromName("r2cacheinstance");
 			const stub = env.R2Cache.get(durableObjectId);
-			const res = await stub.fetch(`${(new URL(request.url)).origin}/rawAnalyticsData`);
+			const res = await stub.fetch(request); // Forwarding this as-is seems required. I tried doing other things but nothing worked.
 			const rawAnalyticsData = await res.json();
 			
 			console.log(`Raw analytics data: ${rawAnalyticsData}`);
@@ -118,7 +118,7 @@ export class R2Cache {
 	async fetch(request) {
 		const url = new URL(request.url);
 
-		if (url.pathname === "/rawAnalyticsData") {
+		if (url.pathname === "/admin/analytics") {
 			return new Response(JSON.stringify("Hello World"), {
 				headers: {
 					'Content-Type': "application/json"
