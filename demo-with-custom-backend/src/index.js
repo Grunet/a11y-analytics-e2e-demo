@@ -58,10 +58,10 @@ export default {
 		}
 
 		if (url.pathname === '/analytics') {
-			const body = await request.json();
+			const bodyObj = await request.json();
 
-			if (body.clientKeyForBasicAbuseProtection !== "clientKeyForBasicAbuseProtectionValue") {
-				console.log(`Something other than the web client hit the /analytics endpoint. Request body: ${JSON.stringify(body)}`);
+			if (bodyObj.clientKeyForBasicAbuseProtection !== "clientKeyForBasicAbuseProtectionValue") {
+				console.log(`Something other than the web client hit the /analytics endpoint. Request body: ${JSON.stringify(bodyObj)}`);
 
 				return new Response('Forbidden', {
 						status: 403,
@@ -72,10 +72,9 @@ export default {
 				);
 			}
 
-			console.log(`request to /analytics with body: ${JSON.stringify(body)}`);
+			console.log(`request to /analytics with body: ${JSON.stringify(bodyObj)}`);
 
-			const objectName = createId();
-			console.log(objectName)
+			await saveEventDataToR2(env, bodyObj);
 
 			return new Response();
 		}
@@ -83,3 +82,23 @@ export default {
 		throw new Error(`Unspecified route hit: ${request.url}`);
 	}
 };
+
+async function saveEventDataToR2(env, eventData) {
+	const foldersToSaveTo = ["allEvents"];
+
+	if (eventData.pageLoad && typeof eventData.pageLoad === "boolean") {
+		foldersToSaveTo.push("pageLoad");
+	}
+
+	if (eventData.conversion && typeof eventData.conversion === "boolean") {
+		foldersToSaveTo.push("conversion");
+	}
+
+	const objectName = createId();
+
+	for (const folder of foldersToSaveTo) {
+		const key = `${folder}/${objectName}.json`;
+
+		await env.BLOB_STORAGE.put(key, JSON.stringify(eventData));
+	}
+}
