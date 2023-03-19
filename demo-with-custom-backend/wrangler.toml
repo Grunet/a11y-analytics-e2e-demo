@@ -11,3 +11,6 @@ bindings = [
   { name = "R2Cache", class_name = "R2Cache" }
 ]
 
+[[migrations]]
+tag = "v1" # Should be unique for each entry
+new_classes = ["R2Cache"] # Array of new classes
