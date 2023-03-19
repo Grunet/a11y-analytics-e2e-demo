@@ -82,7 +82,7 @@ export default {
 		if (url.pathname === "/admin/analytics") {
 			const durableObjectId = env.R2Cache.idFromName("r2cacheinstance");
 			const stub = env.R2Cache.get(durableObjectId);
-			const res = await stub.fetch("/rawAnalyticsData");
+			const res = await stub.fetch(`${(new URL(request.url)).origin}/rawAnalyticsData`);
 			const rawAnalyticsData = await res.json();
 			
 			console.log(`Raw analytics data: ${rawAnalyticsData}`);
