@@ -39,14 +39,49 @@ export default {
 							<button id="conversion-button">Click to simulate a conversion</button>
 						</main>
 						<script>
+							let usesKeyboard = false;
+						
 							document.getElementById("conversion-button").addEventListener("click", () => {
 								console.log("Button clicked");
 
 								navigator.sendBeacon("/analytics", JSON.stringify({
 									clientKeyForBasicAbuseProtection: "clientKeyForBasicAbuseProtectionValue",
-									conversion: true
+									conversion: true,
+									usesKeyboard: usesKeyboard,
 								}));
-							})
+							});
+							
+							try {
+							    const intervalId = setInterval(function checkForKeyboardUsage() {
+
+							    const focusedElement = document.querySelector(":focus-visible");
+
+							    if (!focusedElement) {
+								return;
+							    }
+
+							    // Ignore common false positives for click/touch users
+							    const tagNameUpperCased = focusedElement.tagName.toUpperCase();
+							    if (tagNameUpperCased === "INPUT" || tagNameUpperCased === "TEXTAREA") {
+								return;
+							    }
+
+							    if (focusedElement.contentEditable === "true") {
+								return;
+							    }
+
+							    usesKeyboard = true;
+							    
+							    navigator.sendBeacon("/analytics", JSON.stringify({
+									clientKeyForBasicAbuseProtection: "clientKeyForBasicAbuseProtectionValue",
+									usesKeyboard: true,
+								}));
+
+							    clearInterval(intervalId);
+							}, 500);
+						      } catch (error) {
+							console.error(error);
+						      }
 						</script>
 					</body>
 				</html>
@@ -87,9 +122,9 @@ export default {
 			
 			console.log(`Raw analytics data: ${JSON.stringify(rawAnalyticsData)}`);
 
-			const { conversionRate } = computeConversionRates(rawAnalyticsData);
+			const { conversionRate, keyboardConversionRate } = computeConversionRates(rawAnalyticsData);
 			
-			return new Response(`Conversion rate is ${conversionRate}`);
+			return new Response(`Conversion rate is ${conversionRate}. Keyboard conversion rate is ${keyboardConversionRate}`);
 		}
 
 		throw new Error(`Unspecified route hit: ${request.url}`);
@@ -106,6 +141,10 @@ async function saveEventDataToR2(env, eventData) {
 	if (eventData.conversion && typeof eventData.conversion === "boolean") {
 		foldersToSaveTo.push("conversion");
 	}
+	
+	if (eventData.usesKeyboard && typeof eventData.usesKeyboard === "boolean") {
+		foldersToSaveTo.push("usesKeyboard");
+	}
 
 	const objectName = createId();
 
@@ -121,6 +160,9 @@ function computeConversionRates(rawAnalyticsData) {
 
 	let numPageLoads = 0;
 	let numConversions = 0;
+	
+	let numKeyboardUsages = 0;
+	let numKeyboardConversions = 0;
 
 	for (const event of eventsData) {
 		if (event.pageLoad === true) {
@@ -130,6 +172,14 @@ function computeConversionRates(rawAnalyticsData) {
 		if (event.conversion === true) {
 			numConversions++;
 		}
+		
+		if (event.usesKeyboard === true && event.conversion !== true) {
+			numKeyboardUsages++;
+		}
+		
+		if (event.usesKeyboard === true && event.conversion === true) {
+			numKeyboardConversions++;
+		}
 	}
 
 	let conversionRate;
@@ -138,9 +188,17 @@ function computeConversionRates(rawAnalyticsData) {
 	} else {
 		conversionRate = numConversions/numPageLoads;
 	}
+	
+	let keyboardConversionRate;
+	if (numKeyboardUsages === 0) {
+		keyboardConversionRate = "Undefined";
+	} else {
+		keyboardConversionRate = numKeyboardConversions/numKeyboardUsages;
+	}
 
 	return {
 		conversionRate,
+		keyboardConversionRate,
 	}
 }
 
