@@ -18,6 +18,9 @@ export default {
 				<!DOCTYPE html>
 				<html lang="en">
 					<head>
+						<script>
+							console.log("Page loaded");
+						</script>
 						<title>E2E Analytics for Accessibility Demo</title>
 						<meta name="description" content="An end-to-end demo of analytics for accessibility using a custom backend">
 						<meta charset="UTF-8">
@@ -26,7 +29,13 @@ export default {
 					<body>
 						<main>
 							<h1>This needs better text</h1>
+							<button id="conversion-button">Click to simulate a conversion</button>
 						</main>
+						<script>
+							document.getElementById("conversion-button").addEventListener("click", () => {
+								console.log("Button clicked");
+							})
+						</script>
 					</body>
 				</html>
 			`, {
