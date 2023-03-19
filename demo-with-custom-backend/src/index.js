@@ -33,4 +33,5 @@ export default {
 		}
 
 		throw new Error(`Unspecified route hit: ${request.url}`);
+	}
 };
