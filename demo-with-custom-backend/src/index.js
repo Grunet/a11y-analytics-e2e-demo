@@ -20,6 +20,11 @@ export default {
 					<head>
 						<script>
 							console.log("Page loaded");
+
+							navigator.sendBeacon("/analytics", {
+								clientKeyForBasicAbuseProtection: "clientKeyForBasicAbuseProtectionValue",
+								pageLoad: true
+							});
 						</script>
 						<title>E2E Analytics for Accessibility Demo</title>
 						<meta name="description" content="An end-to-end demo of analytics for accessibility using a custom backend">
@@ -34,6 +39,11 @@ export default {
 						<script>
 							document.getElementById("conversion-button").addEventListener("click", () => {
 								console.log("Button clicked");
+
+								navigator.sendBeacon("/analytics", {
+									clientKeyForBasicAbuseProtection: "clientKeyForBasicAbuseProtectionValue",
+									conversion: true
+								});
 							})
 						</script>
 					</body>
@@ -43,6 +53,26 @@ export default {
 					'Content-Type': 'text\\html'
 				}
 			});
+		}
+
+		if (url.pathname === '/analytics') {
+			const body = await request.json();
+
+			if (body.clientKeyForBasicAbuseProtection !== "clientKeyForBasicAbuseProtectionValue") {
+				console.log(`Something other than the web client hit the /analytics endpoint. Request body: ${JSON.stringify(body)}`);
+
+				return new Response('Forbidden', {
+						status: 403,
+						headers: {
+							'Content-Type': 'text/plain'
+						}
+					}
+				);
+			}
+
+			console.log(JSON.stringify(body));
+
+			return new Response();
 		}
 
 		throw new Error(`Unspecified route hit: ${request.url}`);
