@@ -115,7 +115,9 @@ async function saveEventDataToR2(env, eventData) {
 }
 
 export class R2Cache {
-	constructor(state, env) {}
+	constructor(state, env) {
+		this.env = env;
+	}
 
 	async fetch(request) {
 		const url = new URL(request.url);
