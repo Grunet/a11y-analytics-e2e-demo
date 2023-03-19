@@ -21,10 +21,10 @@ export default {
 						<script>
 							console.log("Page loaded");
 
-							navigator.sendBeacon("/analytics", {
+							navigator.sendBeacon("/analytics", JSON.stringify({
 								clientKeyForBasicAbuseProtection: "clientKeyForBasicAbuseProtectionValue",
 								pageLoad: true
-							});
+							}));
 						</script>
 						<title>E2E Analytics for Accessibility Demo</title>
 						<meta name="description" content="An end-to-end demo of analytics for accessibility using a custom backend">
@@ -40,10 +40,10 @@ export default {
 							document.getElementById("conversion-button").addEventListener("click", () => {
 								console.log("Button clicked");
 
-								navigator.sendBeacon("/analytics", {
+								navigator.sendBeacon("/analytics", JSON.stringify({
 									clientKeyForBasicAbuseProtection: "clientKeyForBasicAbuseProtectionValue",
 									conversion: true
-								});
+								}));
 							})
 						</script>
 					</body>
